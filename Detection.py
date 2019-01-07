@@ -1,32 +1,29 @@
 # proper reaction time is 700ms
 PROPER_REACTION_TIME = 700
-import pandas as pd
 
 import csv
-import os
 
-#def csv_file(file_name,interest_col):
 def csv_file_stimuli():
-    #os.chdir('C:\Users\Owner\PycharmProjects\test') sel1_Run1_2018_Dec_14_1203.csv
-    with open('sel1_time_stim.csv') as csvfile:
+    with open('div1_time_stim.csv') as csvfile:
         reader = csv.reader(csvfile)
         # column A = 1 is the stimulus times
         included_cols = [1]
         stimulus_times = []
-        i= 0
         for line in reader:
-            if not i:
-                i=1 # ignore the first row which is the category
-            else:
-                stimulus_times.append(list(line for i in included_cols))
+            time_list = []
+            for value in line:
+                times = value.split()
+                for t in times:
+                    time_num = float(t)
+                    time_list.append(time_num)
+            stimulus_times.append(list(time_list))
         for stimuli in stimulus_times:
             print(stimuli)
         return stimulus_times
 
 
 def csv_file_reactions():
-    # os.chdir('C:\Users\Owner\PycharmProjects\test')
-    with open('sel1_Run1_2018_Dec_14_1203.csv') as csvfile:
+    with open('div1_Run1_2018_Dec_14_1235.csv') as csvfile:
         reader = csv.reader(csvfile)
         # column K  = 10 is the vector of the reaction time
         included_cols = [10]
@@ -36,10 +33,29 @@ def csv_file_reactions():
             if not i:
                 i = 1  # ignore the first row which is the category
             else:
-                reaction_times.append(list(line[i] for i in included_cols))
-        for react in reaction_times:
-            print(react)
-        return reaction_times
+                reaction_times.append(list(line[j] for j in included_cols))
+                reaction_times_ints = []
+                reaction_times_no_space = []
+                for i in range(len(reaction_times) - 1):
+                    reaction_times_no_space.append(reaction_times[i + 1])
+                    print(reaction_times_no_space[i])
+                for react in reaction_times_no_space:
+                    print(react[0])
+                    str1 = react[0].replace("'", "")
+                    str2 = str1.replace("[", "")
+                    str3 = str2.replace("]", "")
+                    str4 = str3.replace(" ", "")
+                    times= str4.split(",")
+                    time_list = []
+                    for t in times:
+                        time_num = float(t)
+                        time_list.append(time_num)
+                    reaction_times_ints.append(list(time_list))
+
+        for e in reaction_times_ints:
+            print(e)
+
+        return reaction_times_ints
 
 
 # return the next stimulus time
@@ -110,5 +126,5 @@ def detection(stimulus, reaction):
 stimulus = [3.6, 4.5, 8]
 reaction = [3.9, 5, 5.1 ,6 , 8.9]
 #detection(stimulus,reaction)
-stimulus_times = csv_file_stimuli()
+#stimulus_times = csv_file_stimuli()
 reaction_times = csv_file_reactions()
