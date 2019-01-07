@@ -29,28 +29,27 @@ def csv_file_reactions():
         included_cols = [10]
         reaction_times = []
         i = 0
+        reaction_times_ints = []
         for line in reader:
             if not i:
                 i = 1  # ignore the first row which is the category
             else:
                 reaction_times.append(list(line[j] for j in included_cols))
-                reaction_times_ints = []
-                reaction_times_no_space = []
-                for i in range(len(reaction_times) - 1):
-                    reaction_times_no_space.append(reaction_times[i + 1])
-                    print(reaction_times_no_space[i])
-                for react in reaction_times_no_space:
-                    print(react[0])
-                    str1 = react[0].replace("'", "")
-                    str2 = str1.replace("[", "")
-                    str3 = str2.replace("]", "")
-                    str4 = str3.replace(" ", "")
-                    times= str4.split(",")
-                    time_list = []
-                    for t in times:
-                        time_num = float(t)
-                        time_list.append(time_num)
-                    reaction_times_ints.append(list(time_list))
+        reaction_times_no_space = []
+        for i in range(len(reaction_times) - 1):
+            reaction_times_no_space.append(reaction_times[i + 1])
+            print(reaction_times_no_space[i])
+        for react in reaction_times_no_space:
+            str1 = react[0].replace("'", "")
+            str2 = str1.replace("[", "")
+            str3 = str2.replace("]", "")
+            str4 = str3.replace(" ", "")
+            times = str4.split(",")
+            time_list = []
+            for t in times:
+                time_num = float(t)
+                time_list.append(time_num)
+            reaction_times_ints.append(time_list)
 
         for e in reaction_times_ints:
             print(e)
@@ -100,7 +99,7 @@ def detection(stimulus, reaction):
             # Correct response
             if reacts_between[0] - stim <= PROPER_REACTION_TIME:
                 list_accuracy.append(1)
-                correct_RT.append(reacts_between[0] - stim)
+                correct_RT.append((reacts_between[0] - stim)/1000)
             else:
                 # Incorrect response
                 list_accuracy.append(0)
@@ -114,17 +113,26 @@ def detection(stimulus, reaction):
                     if multiple_react - stim <= PROPER_REACTION_TIME:
                         first_press = 1
                         list_accuracy.append(1)
-                        correct_RT.append(reacts_between[0] - stim)
+                        correct_RT.append((reacts_between[0] - stim)/1000)
         else:
             # No response
-            list_accuracy[stim] = 0
-            correct_RT[stim] = -1  # signify that there was no response
+            list_accuracy.append(0)
+            correct_RT.append(-1)  # signify that there was no response
+    return correct_RT
 
-
-
+def check(stimulus_times,reaction_times):
+    RT = []
+    for test in range(len(stimulus_times)):
+        RT.append(detection(stimulus_times[test],reaction_times[test]))
+    for rt in RT:
+        print(rt)
+    print()
 # testing
-stimulus = [3.6, 4.5, 8]
-reaction = [3.9, 5, 5.1 ,6 , 8.9]
+#stimulus = [3.6, 4.5, 8]
+#reaction = [3.9, 5, 5.1 ,6 , 8.9]
 #detection(stimulus,reaction)
-#stimulus_times = csv_file_stimuli()
+
+
+stimulus_times = csv_file_stimuli()
 reaction_times = csv_file_reactions()
+check(stimulus_times,reaction_times)
