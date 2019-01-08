@@ -3,8 +3,8 @@ PROPER_REACTION_TIME = 700
 
 import csv
 
-def csv_file_stimuli():
-    with open('div1_time_stim.csv') as csvfile:
+def csv_file_stimuli(file_name):
+    with open(file_name) as csvfile:
         reader = csv.reader(csvfile)
         # column A = 1 is the stimulus times
         included_cols = [1]
@@ -17,13 +17,12 @@ def csv_file_stimuli():
                     time_num = float(t)
                     time_list.append(time_num)
             stimulus_times.append(list(time_list))
-        for stimuli in stimulus_times:
-            print(stimuli)
+        #for stimuli in stimulus_times:
+            #print(stimuli)
         return stimulus_times
 
-
-def csv_file_reactions():
-    with open('div1_Run1_2018_Dec_14_1235.csv') as csvfile:
+def csv_file_reactions(file_name):
+    with open(file_name) as csvfile:
         reader = csv.reader(csvfile)
         # column K  = 10 is the vector of the reaction time
         included_cols = [10]
@@ -38,7 +37,7 @@ def csv_file_reactions():
         reaction_times_no_space = []
         for i in range(len(reaction_times) - 1):
             reaction_times_no_space.append(reaction_times[i + 1])
-            print(reaction_times_no_space[i])
+            #print(reaction_times_no_space[i])
         for react in reaction_times_no_space:
             str1 = react[0].replace("'", "")
             str2 = str1.replace("[", "")
@@ -51,12 +50,10 @@ def csv_file_reactions():
                 time_list.append(time_num)
             reaction_times_ints.append(time_list)
 
-        for e in reaction_times_ints:
-            print(e)
+        #for e in reaction_times_ints:
+        #    print(e)
 
         return reaction_times_ints
-
-
 # return the next stimulus time
 def getNextStim(stim, stimulus):
     flag = 0
@@ -65,7 +62,6 @@ def getNextStim(stim, stimulus):
             return i;
         if i == stim:
             flag = 1
-
 
 def detection(stimulus, reaction):
     list_accuracy = []
@@ -99,10 +95,12 @@ def detection(stimulus, reaction):
             # Correct response
             if reacts_between[0] - stim <= PROPER_REACTION_TIME:
                 list_accuracy.append(1)
-                correct_RT.append((reacts_between[0] - stim)/1000)
+                correct_RT.append((reacts_between[0] - stim))
             else:
                 # Incorrect response
                 list_accuracy.append(0)
+                # in case the reaction time is bigger than proper reaction time
+                # means that the subject reacted but after a long of time
                 correct_RT.append("NA")
         elif len(reacts_between) > 1:
             # there are more than one response, check if any is reasonable
@@ -113,7 +111,7 @@ def detection(stimulus, reaction):
                     if multiple_react - stim <= PROPER_REACTION_TIME:
                         first_press = 1
                         list_accuracy.append(1)
-                        correct_RT.append((reacts_between[0] - stim)/1000)
+                        correct_RT.append((reacts_between[0] - stim))
         else:
             # No response
             list_accuracy.append(0)
@@ -124,15 +122,34 @@ def check(stimulus_times,reaction_times):
     RT = []
     for test in range(len(stimulus_times)):
         RT.append(detection(stimulus_times[test],reaction_times[test]))
-    for rt in RT:
-        print(rt)
-    print()
+    return RT
+
 # testing
 #stimulus = [3.6, 4.5, 8]
 #reaction = [3.9, 5, 5.1 ,6 , 8.9]
 #detection(stimulus,reaction)
 
+def main_function():
+    list_stims =[]
+    list_reaction_files = []
+    RT_for_subject = []
+    list_stims.append('div1_time_stim.csv')
+    list_stims.append('div2_time_stim.csv')
+    list_stims.append('div3_time_stim.csv')
+    list_stims.append('sel1_time_stim.csv')
+    list_stims.append('sel2_time_stim.csv')
+    list_stims.append('sel3_time_stim.csv')
+    list_reaction_files.append('div1_Run1_2018.csv')
+    list_reaction_files.append('div2_Run1_2018.csv')
+    list_reaction_files.append('div3_Run1_2018.csv')
+    list_reaction_files.append('sel1_Run1_2018.csv')
+    list_reaction_files.append('sel2_Run1_2018.csv')
+    list_reaction_files.append('sel3_Run1_2018.csv')
+    for run in range(len(list_stims)):
+        stimulus_times = csv_file_stimuli(list_stims[run])
+        reaction_times = csv_file_reactions(list_reaction_files[run])
+        RT_for_subject.append(check(stimulus_times, reaction_times))
+        print(RT_for_subject[run])
 
-stimulus_times = csv_file_stimuli()
-reaction_times = csv_file_reactions()
-check(stimulus_times,reaction_times)
+
+main_function()
