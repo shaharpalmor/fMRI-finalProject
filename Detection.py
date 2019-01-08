@@ -116,6 +116,7 @@ def detection(stimulus, reaction):
             # No response
             list_accuracy.append(0)
             correct_RT.append(-1)  # signify that there was no response
+    ## here there is the place to make the mean and std of the  subjects results.. ready to R
     return correct_RT
 
 def check(stimulus_times,reaction_times):
