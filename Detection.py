@@ -1,5 +1,5 @@
-# proper reaction time is 700ms
-PROPER_REACTION_TIME = 1300
+# proper reaction time is 1500ms
+PROPER_REACTION_TIME = 1500
 
 import csv
 
@@ -31,6 +31,7 @@ def csv_file_reactions(file_name,col_num):
         i = 0
         counter_lines = 0
         reaction_times_ints = []
+        # Meaning it is a run with Divided conditions
         if col_num != 18:
             for line in reader:
                 if not i:
@@ -54,21 +55,30 @@ def csv_file_reactions(file_name,col_num):
                     time_num = float(t)
                     time_list.append(time_num)
                 reaction_times_ints.append(time_list)
-
-            #for e in reaction_times_ints:
-            #    print(e)
-
             return reaction_times_ints
+        # meaning it is run with Selective conditions.
         else:
             for line in reader:
-                if counter_lines != 10:
-                    counter_lines += 1  # ignore the first row which is the category
+
+                if line[5] == 'trials.thisRepN':
+                    print(line[18])
+                    continue
+                elif line[5] =='':
+                    print(line[18])
+                    continue
                 else:
-                    counter_lines = 10;
+                    print(line[18])
                     reaction_times.append(list(line[j] for j in included_cols))
+                ###
+                #if counter_lines != 10:
+                 #   counter_lines += 1  # ignore the first row which is the category
+                #else:
+                 #   counter_lines = 10;
+                    #reaction_times.append(list(line[j] for j in included_cols))
             reaction_times_no_space = []
-            for i in range(len(reaction_times) - 1):
-                reaction_times_no_space.append(reaction_times[i + 1])
+            #for i in range(len(reaction_times) - 1):
+            for i in range(len(reaction_times)):
+                reaction_times_no_space.append(reaction_times[i])
                 # print(reaction_times_no_space[i])
             for react in reaction_times_no_space:
                 str1 = react[0].replace("'", "")
@@ -136,7 +146,8 @@ def detection(stimulus, reaction):
                 list_accuracy.append(0)
                 # in case the reaction time is bigger than proper reaction time
                 # means that the subject reacted but after a long of time
-                correct_RT.append("NA")
+                #correct_RT.append("NA")
+                correct_RT.append(0)
         elif len(reacts_between) > 1:
             # there are more than one response, check if any is reasonable
             # if the first is reasonable then will be taken
@@ -157,13 +168,47 @@ def detection(stimulus, reaction):
 def check(stimulus_times,reaction_times):
     RT = []
     for test in range(len(stimulus_times)):
-        RT.append(detection(stimulus_times[test],reaction_times[test]))
+        answer = detection(stimulus_times[test],reaction_times[test])
+        # In case did not notice to all of the stimulus
+        while(len(answer)!=len(stimulus_times[test])):
+            answer.append(-1)
+        RT.append(answer)
+
     return RT
 
 # testing
 #stimulus = [3.6, 4.5, 8]
 #reaction = [3.9, 5, 5.1 ,6 , 8.9]
 #detection(stimulus,reaction)
+
+# Takes every run which is a a list of lists and make it to one list of reactions - concatenated onw after the other.
+def makeRuns(RT_for_subject):
+    main_list = []
+    for sublist in RT_for_subject:
+        sub_main_list = []
+        for item in sublist:
+            for i in item:
+                sub_main_list.append(i)
+        main_list.append(sub_main_list)
+    print()
+    for run in range(len(main_list)):
+        print(len(main_list[run]))
+        print(main_list[run])
+    return main_list
+
+# Write each run as a line in a file for the R project
+def write_to_file(main_list):
+    file = open("subject_reaction_times.txt","w")
+    for run in range(len(main_list)):
+        str1 = str(main_list[run])
+        str2 = str1.replace("[", "")
+        str3 = str2.replace("]", "")
+        str4 = str3.replace(",", "")
+        print(str4)
+        file.write(str4+"\n")
+
+    file.close()
+
 
 def main_function():
     div_list_stims =[]
@@ -193,7 +238,8 @@ def main_function():
         RT_for_subject.append(check(stimulus_times, reaction_times))
     for run in range(len(RT_for_subject)):
         print(RT_for_subject[run])
-
+    main_list = makeRuns(RT_for_subject)
+    write_to_file(main_list)
 
 
 
