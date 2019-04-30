@@ -61,13 +61,13 @@ def csv_file_reactions(file_name,col_num):
             for line in reader:
 
                 if line[5] == 'trials.thisRepN':
-                    print(line[18])
+                    #print(line[18])
                     continue
                 elif line[5] =='':
-                    print(line[18])
+                    #print(line[18])
                     continue
                 else:
-                    print(line[18])
+                    #print(line[18])
                     reaction_times.append(list(line[j] for j in included_cols))
                 ###
                 #if counter_lines != 10:
@@ -114,7 +114,8 @@ def detection(stimulus, reaction):
     list_stimulus = []
     # Represents times of reaction
     list_reaction = []
-
+    #list_false_alarms = []
+    #list_misses = []
     correct_RT = []
 
     # Normalize each stimulus/reaction form seconds to milli seconds
@@ -191,9 +192,9 @@ def makeRuns(RT_for_subject):
                 sub_main_list.append(i)
         main_list.append(sub_main_list)
     print()
-    for run in range(len(main_list)):
-        print(len(main_list[run]))
-        print(main_list[run])
+    #for run in range(len(main_list)):
+     #   print(len(main_list[run]))
+      #  print(main_list[run])
     return main_list
 
 # Write each run as a line in a file for the R project
@@ -204,10 +205,20 @@ def write_to_file(main_list):
         str2 = str1.replace("[", "")
         str3 = str2.replace("]", "")
         str4 = str3.replace(",", "")
-        print(str4)
+       # print(str4)
         file.write(str4+"\n")
 
     file.close()
+
+def detect_wrong_response(list_not_etz,sel_rections):
+    times_stims_sel = []
+    for selective_cond in range(len(list_not_etz)):
+        times_stims_sel.append(csv_file_stimuli(list_not_etz[selective_cond]))
+    for i in range(len(times_stims_sel)):
+        print(times_stims_sel[i])
+    ####################################################
+
+
 
 
 def main_function():
@@ -215,6 +226,7 @@ def main_function():
     div_list_reaction_files = []
     sel_list_stims = []
     sel_list_reaction_files = []
+    sel_rections = []
     RT_for_subject = []
     div_list_stims.append('div1_time_stim.csv')
     div_list_stims.append('div2_time_stim.csv')
@@ -228,6 +240,7 @@ def main_function():
     sel_list_reaction_files.append('pilot1_Selective1_2019_Mar_05_1133.csv')
     sel_list_reaction_files.append('pilot1_Selective2_2019_Mar_05_1152.csv')
     sel_list_reaction_files.append('pilot1_Selective3_2019_Mar_05_1204.csv')
+
     for run in range(len(div_list_stims)):
         stimulus_times = csv_file_stimuli(div_list_stims[run])
         reaction_times = csv_file_reactions(div_list_reaction_files[run], 10);
@@ -235,11 +248,21 @@ def main_function():
     for run in range(len(sel_list_stims)):
         stimulus_times = csv_file_stimuli(sel_list_stims[run])
         reaction_times = csv_file_reactions(sel_list_reaction_files[run], 18);
+        sel_rections.append(reaction_times)
         RT_for_subject.append(check(stimulus_times, reaction_times))
+
+    ####NOT ETZ#####
+    list_not_etz = []
+    list_not_etz.append('not_etz_1.csv')
+    list_not_etz.append('‏‏not_etz_2.csv')
+    list_not_etz.append('‏‏‏‏not_etz_3.csv')
+    detect_wrong_response(list_not_etz,sel_rections)
+
     for run in range(len(RT_for_subject)):
         print(RT_for_subject[run])
     main_list = makeRuns(RT_for_subject)
     write_to_file(main_list)
+
 
 
 
