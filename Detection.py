@@ -216,6 +216,8 @@ def detect_wrong_response(list_not_etz,sel_rections):
         times_stims_sel.append(csv_file_stimuli(list_not_etz[selective_cond]))
     for i in range(len(times_stims_sel)):
         print(times_stims_sel[i])
+        print(sel_rections[i])
+    print()
     ####################################################
 
 
