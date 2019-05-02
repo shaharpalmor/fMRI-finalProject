@@ -210,14 +210,27 @@ def write_to_file(main_list):
 
     file.close()
 
-def detect_wrong_response(list_not_etz,sel_rections):
+def detect_wrong_response(list_not_etz,sel_rections,sel_stims):
     times_stims_sel = []
     for selective_cond in range(len(list_not_etz)):
         times_stims_sel.append(csv_file_stimuli(list_not_etz[selective_cond]))
-    for i in range(len(times_stims_sel)):
-        print(times_stims_sel[i])
-        print(sel_rections[i])
-    print()
+    diff_etz = []
+    for one_cond, not_etz in zip(sel_stims, times_stims_sel):
+        for real_stim, etz_stim in zip(one_cond,not_etz):
+            for stim in range(len(real_stim)):
+                flag = 0
+                for etz in range(len(etz_stim)):
+                    a = (etz_stim[etz]-real_stim[stim])*1000
+                    b = -PROPER_REACTION_TIME
+                    if a <= PROPER_REACTION_TIME and a >= b :
+                        flag = 1
+                if flag:
+                    diff_etz.append(1)
+                else:
+                    diff_etz.append(0)
+    for i in diff_etz:
+        print(i)
+    print(len(diff_etz))
     ####################################################
 
 
@@ -229,6 +242,7 @@ def main_function():
     sel_list_stims = []
     sel_list_reaction_files = []
     sel_rections = []
+    sel_stims = []
     RT_for_subject = []
     div_list_stims.append('div1_time_stim.csv')
     div_list_stims.append('div2_time_stim.csv')
@@ -250,15 +264,17 @@ def main_function():
     for run in range(len(sel_list_stims)):
         stimulus_times = csv_file_stimuli(sel_list_stims[run])
         reaction_times = csv_file_reactions(sel_list_reaction_files[run], 18);
+        sel_stims.append(stimulus_times)
         sel_rections.append(reaction_times)
         RT_for_subject.append(check(stimulus_times, reaction_times))
 
     ####NOT ETZ#####
     list_not_etz = []
-    list_not_etz.append('not_etz_1.csv')
-    list_not_etz.append('‏‏not_etz_2.csv')
+    #list_not_etz.append('not_etz_1.csv')
+    #list_not_etz.append('‏‏not_etz_2.csv')
     list_not_etz.append('‏‏‏‏not_etz_3.csv')
-    detect_wrong_response(list_not_etz,sel_rections)
+    ## currently working on the 3 selective condition.
+    detect_wrong_response(list_not_etz,sel_rections,sel_stims)
 
     for run in range(len(RT_for_subject)):
         print(RT_for_subject[run])
