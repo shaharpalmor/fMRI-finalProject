@@ -177,11 +177,6 @@ def check(stimulus_times,reaction_times):
 
     return RT
 
-# testing
-#stimulus = [3.6, 4.5, 8]
-#reaction = [3.9, 5, 5.1 ,6 , 8.9]
-#detection(stimulus,reaction)
-
 # Takes every run which is a a list of lists and make it to one list of reactions - concatenated onw after the other.
 def makeRuns(RT_for_subject):
     main_list = []
@@ -211,29 +206,21 @@ def write_to_file(main_list):
     file.close()
 
 def detect_wrong_response(list_not_etz,sel_rections,sel_stims):
-    times_stims_sel = []
-    for selective_cond in range(len(list_not_etz)):
-        times_stims_sel.append(csv_file_stimuli(list_not_etz[selective_cond]))
+    times_stims_sel = csv_file_stimuli(list_not_etz)
     diff_etz = []
-    for one_cond, not_etz in zip(sel_stims, times_stims_sel):
-        for real_stim, etz_stim in zip(one_cond,not_etz):
-            for stim in range(len(real_stim)):
-                flag = 0
-                for etz in range(len(etz_stim)):
-                    a = (etz_stim[etz]-real_stim[stim])*1000
-                    b = -PROPER_REACTION_TIME
-                    if a <= PROPER_REACTION_TIME and a >= b :
-                        flag = 1
-                if flag:
-                    diff_etz.append(1)
-                else:
-                    diff_etz.append(0)
-    for i in diff_etz:
-        print(i)
-    print(len(diff_etz))
-
+    for real_stim, etz_stim in zip(sel_stims, times_stims_sel):
+        for stim in range(len(real_stim)):
+            flag = 0
+            for etz in range(len(etz_stim)):
+                a = (etz_stim[etz] - real_stim[stim]) * 1000
+                b = -PROPER_REACTION_TIME
+                if a <= PROPER_REACTION_TIME and a >= b:
+                    flag = 1
+            if flag:
+                diff_etz.append(1)
+            else:
+                diff_etz.append(0)
     return diff_etz
-    ####################################################
 
 
 
@@ -276,8 +263,9 @@ def main_function():
         sel_stims.append(stimulus_times)
         sel_rections.append(reaction_times)
         RT_for_subject.append(check(stimulus_times, reaction_times))
-        #list_wrong_sel.append(detect_wrong_response(list_not_etz[run], reaction_times, stimulus_times))
-    list = detect_wrong_response(list_not_etz, sel_rections, sel_stims)
+
+    for trail in range(len(list_not_etz)):
+        list_wrong_sel.append(detect_wrong_response(list_not_etz[trail], sel_rections[trail], sel_stims[trail]))
 
 
     for run in range(len(RT_for_subject)):
