@@ -3,6 +3,7 @@ PROPER_REACTION_TIME = 1500
 
 import csv
 
+
 def csv_file_stimuli(file_name):
     with open(file_name) as csvfile:
         reader = csv.reader(csvfile)
@@ -20,6 +21,7 @@ def csv_file_stimuli(file_name):
         #for stimuli in stimulus_times:
             #print(stimuli)
         return stimulus_times
+
 
 def csv_file_reactions(file_name,col_num):
     with open(file_name) as csvfile:
@@ -41,7 +43,6 @@ def csv_file_reactions(file_name,col_num):
             reaction_times_no_space = []
             for i in range(len(reaction_times) - 1):
                 reaction_times_no_space.append(reaction_times[i + 1])
-                #print(reaction_times_no_space[i])
             for react in reaction_times_no_space:
                 str1 = react[0].replace("'", "")
                 str2 = str1.replace("[", "")
@@ -61,22 +62,12 @@ def csv_file_reactions(file_name,col_num):
             for line in reader:
 
                 if line[5] == 'trials.thisRepN':
-                    #print(line[18])
                     continue
                 elif line[5] =='':
-                    #print(line[18])
                     continue
                 else:
-                    #print(line[18])
                     reaction_times.append(list(line[j] for j in included_cols))
-                ###
-                #if counter_lines != 10:
-                 #   counter_lines += 1  # ignore the first row which is the category
-                #else:
-                 #   counter_lines = 10;
-                    #reaction_times.append(list(line[j] for j in included_cols))
             reaction_times_no_space = []
-            #for i in range(len(reaction_times) - 1):
             for i in range(len(reaction_times)):
                 reaction_times_no_space.append(reaction_times[i])
                 # print(reaction_times_no_space[i])
@@ -93,11 +84,8 @@ def csv_file_reactions(file_name,col_num):
                     time_num = float(t)
                     time_list.append(time_num)
                 reaction_times_ints.append(time_list)
-
-            # for e in reaction_times_ints:
-            #    print(e)
-
             return reaction_times_ints
+
 
 # return the next stimulus time
 def getNextStim(stim, stimulus):
@@ -108,14 +96,13 @@ def getNextStim(stim, stimulus):
         if i == stim:
             flag = 1
 
+
 def detection(stimulus, reaction):
     list_accuracy = []
     # Represents times of stimulus
     list_stimulus = []
     # Represents times of reaction
     list_reaction = []
-    #list_false_alarms = []
-    #list_misses = []
     correct_RT = []
 
     # Normalize each stimulus/reaction form seconds to milli seconds
@@ -166,6 +153,7 @@ def detection(stimulus, reaction):
     ## here there is the place to make the mean and std of the  subjects results.. ready to R
     return correct_RT
 
+
 def check(stimulus_times,reaction_times):
     RT = []
     for test in range(len(stimulus_times)):
@@ -176,6 +164,7 @@ def check(stimulus_times,reaction_times):
         RT.append(answer)
 
     return RT
+
 
 # Takes every run which is a a list of lists and make it to one list of reactions - concatenated onw after the other.
 def makeRuns(RT_for_subject):
@@ -192,6 +181,7 @@ def makeRuns(RT_for_subject):
       #  print(main_list[run])
     return main_list
 
+
 # Write each run as a line in a file for the R project
 def write_to_file(main_list):
     file = open("subject_reaction_times.txt","w")
@@ -204,6 +194,7 @@ def write_to_file(main_list):
         file.write(str4+"\n")
 
     file.close()
+
 
 def detect_wrong_response(list_not_etz,sel_rections,sel_stims):
     times_stims_sel = csv_file_stimuli(list_not_etz)
@@ -223,6 +214,13 @@ def detect_wrong_response(list_not_etz,sel_rections,sel_stims):
     return diff_etz
 
 
+def wrong_speaker(sel_rections,list_not_etz):
+    RT = []
+    for trail in range(len(sel_rections)):
+        times_stims_sel = csv_file_stimuli(list_not_etz[trail])
+        answer = detection(times_stims_sel,sel_rections[trail])
+        RT.append(answer)
+    return RT
 
 
 def main_function():
@@ -267,6 +265,8 @@ def main_function():
     for trail in range(len(list_not_etz)):
         list_wrong_sel.append(detect_wrong_response(list_not_etz[trail], sel_rections[trail], sel_stims[trail]))
 
+    # check mistakes when not the correct speaker say etz
+    #RT_not_etz = wrong_speaker(sel_rections,list_not_etz)
 
     for run in range(len(RT_for_subject)):
         print(RT_for_subject[run])
