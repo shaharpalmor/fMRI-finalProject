@@ -3,7 +3,7 @@ PROPER_REACTION_TIME = 1500
 
 import csv
 
-
+# csv_file_stimuli function gets the stimuli times from the excel files.
 def csv_file_stimuli(file_name):
     with open(file_name) as csvfile:
         reader = csv.reader(csvfile)
@@ -18,11 +18,9 @@ def csv_file_stimuli(file_name):
                     time_num = float(t)
                     time_list.append(time_num)
             stimulus_times.append(list(time_list))
-        #for stimuli in stimulus_times:
-            #print(stimuli)
         return stimulus_times
 
-
+# csv_file_reactions function gets the reactions times from the excel files.
 def csv_file_reactions(file_name,col_num):
     with open(file_name) as csvfile:
         reader = csv.reader(csvfile)
@@ -97,6 +95,9 @@ def getNextStim(stim, stimulus):
             flag = 1
 
 
+# this is the main function that get a vector of one condition, with some stimulus that were
+# on this condition. it also gets a reaction vector, and for each stimuli checks if there were a proper
+# response. it returns a correct rt vector with the reaction times.
 def detection(stimulus, reaction):
     list_accuracy = []
     # Represents times of stimulus
@@ -154,6 +155,7 @@ def detection(stimulus, reaction):
     return correct_RT
 
 
+# this function calls to the detection function with each condition stimuli and reaction.
 def check(stimulus_times,reaction_times):
     RT = []
     for test in range(len(stimulus_times)):
@@ -238,6 +240,9 @@ def main_function():
     sel_list_stims.append('sel1_time_stim.csv')
     sel_list_stims.append('sel2_time_stim.csv')
     sel_list_stims.append('sel3_time_stim.csv')
+    ########################################################################
+    ## Here is the place where you should enter the files of each subject.##
+    ########################################################################
     div_list_reaction_files.append('pilot1_Divided1_2019_Mar_05_1127.csv')
     div_list_reaction_files.append('pilot1_Divided2_2019_Mar_05_1139.csv')
     div_list_reaction_files.append('pilot1_Divided3_2019_Mar_05_1159.csv')
